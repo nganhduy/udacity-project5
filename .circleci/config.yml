@@ -1,0 +1,45 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.3
+  aws-cli: circleci/aws-cli@3.1.5
+            
+jobs:
+  deploy-eks:
+    docker: 
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: 
+          name: Deploy eksctl
+          command: |
+              aws cloudformation deploy \
+              --template-file eksctl/eksctl.yml \
+              --stack-name eksctl-fury \
+      - run: 
+          name: Deploy eksctl-node
+          command: |
+              aws cloudformation deploy \
+              --template-file eksctl/eksctl.yml \
+              --stack-name eksctl-fury-node \
+  build-app:
+    docker:
+      - image: cimg/node:14.21.3
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Build front-end
+          command: |
+              cd my-app
+              npm install
+              npm run build
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build   
+
+workflows:
+  default:
+    jobs:
+      - build-app

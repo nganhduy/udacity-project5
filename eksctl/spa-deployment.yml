@@ -1,0 +1,17 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: deployment-angular
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        label-key : label-value  
+    spec:
+      containers:
+        - name: deploment-container-angular
+          image: fury/angular-app:v1.0.0
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 80
