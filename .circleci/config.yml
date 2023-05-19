@@ -5,6 +5,7 @@ orbs:
   aws-eks: circleci/aws-eks@2.2.0
   kubernetes: circleci/kubernetes@1.3.1
   aws-cli: circleci/aws-cli@3.1.3
+  browser-tools: circleci/browser-tools@1.2.3
 
 jobs:
   cfn-lint:
@@ -40,7 +41,6 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file eksctl/eksctl.yml \
-            --parameter-overrides $(jq -r '.[] | [.ParameterKey, .ParameterValue] | "\(.[0])=\(.[1])"' ./eksctl/eksctl-parameter.json) \
             --stack-name << parameters.stack-name-1 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
       - run:
@@ -49,21 +49,28 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file eksctl/eks-node.yml \
-            --parameter-overrides $(jq -r '.[] | [.ParameterKey, .ParameterValue] | "\(.[0])=\(.[1])"' ./eksctl/eks-node-parameter.json) \
             --stack-name << parameters.stack-name-2 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
 
   lint-frontend:
+    working_directory: ~/ng-project
     docker:
-      - image: node:13.8.0
+      - image: cimg/node:16.13.1-browsers
     steps:
-      - checkout
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - run:
-          name: Check lint code
+          name: Check install
           command: |
-            cd angular-app
-            npm install
-            npm run test
+            google-chrome --version
+            chromedriver --version
+      - checkout
+      - run: 
+          name: lint
+          command: |
+              cd angular-app
+              npm install 
+              npm run test
 
   build-frontend:
     docker:
@@ -130,7 +137,7 @@ jobs:
             kubectl rollout restart deployment/angular-app
 
 workflows:
-  capstone:
+  my-workflow:
     jobs:
       - deploy-cfn:
           stack-name-1: udafury-fury
