@@ -8,22 +8,7 @@ orbs:
   browser-tools: circleci/browser-tools@1.2.3
 
 jobs:
-  cfn-lint:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - run:
-          name: Install cfn lint
-          command: |
-            pip install cfn-lint
-      - run:
-          name: Validate CloudFormation template
-          command: |
-            #return 1
-            cfn-lint eksclt/eksctl.yml
-
-  deploy-cfn:
+  deploy-app:
     parameters:
       stack-name-1:
         description: Name of the CloudFormation stack
@@ -78,7 +63,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build front-end
+          name: Build front-app
           command: |
             cd angular-app
             docker build -t duyanhng/angular-app .
@@ -141,7 +126,7 @@ workflows:
       - deploy-app:
           stack-name-1: udafury-fury
           stack-name-2: udafury-fury-nodegroup
-      - lint-frontend
+      - lint-app
       - build-app:
           requires:
             - lint-app
@@ -149,4 +134,4 @@ workflows:
           cluster-name: "udafury-fury"
           requires:
             - build-app
-            - deploy-cfn
+            - deploy-app
