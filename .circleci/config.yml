@@ -81,12 +81,12 @@ jobs:
           name: Build front-end
           command: |
             cd angular-app
-            docker build -t fury/angular-app .
+            docker build -t duyanhng/angular-app .
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$USERNAME" -p "$PASSWORD"
-            docker push fury/angular-app:latest
+            docker push duyanhng/angular-app:latest
 
   deploy-frontend:
     docker:
@@ -123,7 +123,7 @@ jobs:
           namespace: default
       - kubernetes/update-container-image:
           get-rollout-status: true
-          container-image-updates: "angular-app=fury/angular-app:latest"
+          container-image-updates: "angular-app=duyanhng/angular-app:latest"
           resource-name: deployment/angular-app
           namespace: default
       - run:
