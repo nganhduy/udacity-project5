@@ -83,4 +83,9 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-app
+      - deploy-eks
+      - lint
+      - build-frontend
+      - deploy-frontend: 
+          require: 
+            - build-frontend
