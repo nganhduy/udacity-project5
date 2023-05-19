@@ -39,7 +39,7 @@ jobs:
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
   lint-frontend:
     docker:
-      - image: node:13.8.0
+      - image: cimg/node:14.20.1
     steps:
       - checkout
       - run:
