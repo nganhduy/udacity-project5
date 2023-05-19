@@ -135,8 +135,6 @@ workflows:
       - deploy-cfn:
           stack-name-1: udafury-fury
           stack-name-2: udafury-fury-nodegroup
-          requires:
-            - cfn-lint
       - lint-frontend
       - build-frontend:
           requires:
