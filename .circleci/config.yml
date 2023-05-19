@@ -25,7 +25,6 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file eksctl/eksctl.yml \
-            --parameter-overrides $(jq -r '.[] | [.ParameterKey, .ParameterValue] | "\(.[0])=\(.[1])"' ./eksctl/eksctl-parameter.json) \
             --stack-name << parameters.stack-name-1 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
       - run:
@@ -34,7 +33,6 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file infras/eks-node.yml \
-            --parameter-overrides $(jq -r '.[] | [.ParameterKey, .ParameterValue] | "\(.[0])=\(.[1])"' ./eksctl/eksctl-node-parameter.json) \
             --stack-name << parameters.stack-name-2 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
   lint-frontend:
