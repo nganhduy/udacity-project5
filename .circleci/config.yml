@@ -7,6 +7,21 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.3
 
 jobs:
+  cfn-lint:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - run:
+          name: Install cfn lint
+          command: |
+            pip install cfn-lint
+      - run:
+          name: Validate CloudFormation template
+          command: |
+            #return 1
+            cfn-lint eksclt/eksctl.yml
+
   deploy-cfn:
     parameters:
       stack-name-1:
@@ -25,6 +40,7 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file eksctl/eksctl.yml \
+            --parameter-overrides $(jq -r '.[] | [.ParameterKey, .ParameterValue] | "\(.[0])=\(.[1])"' ./eksctl/eksctl-parameter.json) \
             --stack-name << parameters.stack-name-1 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
       - run:
@@ -32,12 +48,14 @@ jobs:
           no_output_timeout: 30m
           command: |
             aws cloudformation deploy \
-            --template-file infras/eks-node.yml \
+            --template-file eksctl/eks-node.yml \
+            --parameter-overrides $(jq -r '.[] | [.ParameterKey, .ParameterValue] | "\(.[0])=\(.[1])"' ./eksctl/eks-node-parameter.json) \
             --stack-name << parameters.stack-name-2 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+
   lint-frontend:
     docker:
-      - image: cimg/node:14.20.1
+      - image: node:13.8.0
     steps:
       - checkout
       - run:
@@ -61,7 +79,7 @@ jobs:
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
-            docker login -u "$USERNAME" -p "$PASSWORD"
+            echo "$DOCKERHUB_PASS" | docker login -u "$USERNAME" -p "$PASSWORD"
             docker push fury/angular-app:latest
 
   deploy-frontend:
@@ -115,14 +133,16 @@ workflows:
   capstone:
     jobs:
       - deploy-cfn:
-          stack-name-1: Udafury-EKS
-          stack-name-2: Udafury-EKS-Node
+          stack-name-1: udafury-fury
+          stack-name-2: udafury-fury-nodegroup
+          requires:
+            - cfn-lint
       - lint-frontend
       - build-frontend:
           requires:
             - lint-frontend
       - deploy-frontend:
-          cluster-name: "furycity"
+          cluster-name: "udafury-fury"
           requires:
             - build-frontend
             - deploy-cfn
