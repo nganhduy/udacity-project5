@@ -48,7 +48,7 @@ jobs:
           no_output_timeout: 30m
           command: |
             aws cloudformation deploy \
-            --template-file eksctl/eks-node.yml \
+            --template-file eksctl/eksctl-node.yml \
             --stack-name << parameters.stack-name-2 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
 
