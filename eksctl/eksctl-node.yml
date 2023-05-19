@@ -83,7 +83,7 @@ Resources:
         MinSize: 2
       Subnets: !Split
       - ','
-      - Fn::ImportValue: !Sub "${AWS::StackName}::SubnetsPublic"
+      - Fn::ImportValue: !Sub "udafury-fury::SubnetsPublic"
       Tags:
         alpha.eksctl.io/nodegroup-name: ng-8cd5ef40
         alpha.eksctl.io/nodegroup-type: managed
