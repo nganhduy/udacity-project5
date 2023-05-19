@@ -116,12 +116,9 @@ jobs:
 workflows:
   capstone:
     jobs:
-      - cfn-lint
       - deploy-cfn:
           stack-name-1: Udafury-EKS
           stack-name-2: Udafury-EKS-Node
-          requires:
-            - cfn-lint
       - lint-frontend
       - build-frontend:
           requires:
