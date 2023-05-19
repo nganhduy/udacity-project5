@@ -1,5 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: 'EKS Managed Nodes (SSH access: false) [created by eksctl]'
+Parameters:
+  EnvironmentName:
+      Description: An environment name that will be prefixed to resource names
+      Type: String
 Mappings:
   ServicePrincipalPartitionMap:
     aws:
@@ -30,59 +34,31 @@ Resources:
           HttpPutResponseHopLimit: 2
           HttpTokens: optional
         SecurityGroupIds:
-          - !ImportValue 'eksctl-udacity-fury-cluster::ClusterSecurityGroupId'
-        TagSpecifications:
-          - ResourceType: instance
-            Tags:
-              - Key: Name
-                Value: udacity-fury-ng-37ce21ee-Node
-              - Key: alpha.eksctl.io/nodegroup-name
-                Value: ng-37ce21ee
-              - Key: alpha.eksctl.io/nodegroup-type
-                Value: managed
-          - ResourceType: volume
-            Tags:
-              - Key: Name
-                Value: udacity-fury-ng-37ce21ee-Node
-              - Key: alpha.eksctl.io/nodegroup-name
-                Value: ng-37ce21ee
-              - Key: alpha.eksctl.io/nodegroup-type
-                Value: managed
-          - ResourceType: network-interface
-            Tags:
-              - Key: Name
-                Value: udacity-fury-ng-37ce21ee-Node
-              - Key: alpha.eksctl.io/nodegroup-name
-                Value: ng-37ce21ee
-              - Key: alpha.eksctl.io/nodegroup-type
-                Value: managed
-      LaunchTemplateName: !Sub '${AWS::StackName}'
+          - Fn::ImportValue: !Sub '${EnvironmentName}::ClusterSecurityGroupId'
+      LaunchTemplateName: !Sub '${EnvironmentName}'
   ManagedNodeGroup:
     Type: 'AWS::EKS::Nodegroup'
     Properties:
       AmiType: AL2_x86_64
-      ClusterName: udacity-fury
+      ClusterName: capstone-udacity
       InstanceTypes:
         - m5.large
       Labels:
-        alpha.eksctl.io/cluster-name: udacity-fury
-        alpha.eksctl.io/nodegroup-name: ng-37ce21ee
+        alpha.eksctl.io/cluster-name: capstone-udacity
+        alpha.eksctl.io/nodegroup-name: ng-b2c44d78
       LaunchTemplate:
         Id: !Ref LaunchTemplate
       NodeRole: !GetAtt 
         - NodeInstanceRole
         - Arn
-      NodegroupName: ng-37ce21ee
+      NodegroupName: ng-b2c44d78
       ScalingConfig:
         DesiredSize: 2
         MaxSize: 2
         MinSize: 2
-      Subnets:
-        - subnet-09a273505d3c83d2c
-        - subnet-0df356980ba4ff27b
-      Tags:
-        alpha.eksctl.io/nodegroup-name: ng-37ce21ee
-        alpha.eksctl.io/nodegroup-type: managed
+      Subnets: !Split 
+        - ','
+        - Fn::ImportValue: !Sub '${EnvironmentName}::SubnetsPublic'
   NodeInstanceRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -99,12 +75,11 @@ Resources:
                   - EC2
         Version: 2012-10-17
       ManagedPolicyArns:
-        - !Sub >-
-          arn:${AWS::Partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly'
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEKSWorkerNodePolicy'
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEKS_CNI_Policy'
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore'
       Path: /
       Tags:
         - Key: Name
-          Value: !Sub '${AWS::StackName}/NodeInstanceRole'
+          Value: !Sub '${EnvironmentName}/NodeInstanceRole'
