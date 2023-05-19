@@ -16,12 +16,14 @@ jobs:
           name: Deploy eksctl
           command: |
               aws cloudformation deploy \
+              --region us-east-1
               --template-file eksctl/eksctl.yml \
               --stack-name eksctl-fury \
       - run: 
           name: Deploy eksctl-node
           command: |
               aws cloudformation deploy \
+              --region us-east-1
               --template-file eksctl/eksctl-node.yml \
               --stack-name eksctl-fury-node \
   lint: 
@@ -51,7 +53,7 @@ jobs:
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$USERNAME" -p "$PASSWORD"
+            docker login -u "$USERNAME" -p "$PASSWORD"
             docker push fury/angular-app:latest
 
   deploy-frontend:
