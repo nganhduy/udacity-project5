@@ -112,3 +112,4 @@ Resources:
       - Key: Name
         Value:
           Fn::Sub: "${AWS::StackName}/NodeInstanceRole"
+
