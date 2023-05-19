@@ -81,9 +81,9 @@ Resources:
         DesiredSize: 2
         MaxSize: 2
         MinSize: 2
-      Subnets:
-      - subnet-0b5f6e416a342b8db
-      - subnet-0ef9be967da1b5784
+      Subnets: !Split
+      - ','
+      - Fn::ImportValue: !Sub "${AWS::StackName}::SubnetsPublic"
       Tags:
         alpha.eksctl.io/nodegroup-name: ng-8cd5ef40
         alpha.eksctl.io/nodegroup-type: managed
