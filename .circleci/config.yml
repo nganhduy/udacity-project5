@@ -52,7 +52,7 @@ jobs:
             --stack-name << parameters.stack-name-2 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
 
-  lint-frontend:
+  lint-app:
     docker:
       - image: cimg/node:16.13.1-browsers
     steps:
@@ -71,7 +71,7 @@ jobs:
               npm install 
               npm run test
 
-  build-frontend:
+  build-app:
     docker:
       - image: docker:17.05.0-ce-git
     steps:
@@ -88,7 +88,7 @@ jobs:
             echo "$DOCKERHUB_PASS" | docker login -u "$USERNAME" -p "$PASSWORD"
             docker push duyanhng/angular-app:latest
 
-  deploy-frontend:
+  deploy-app:
     docker:
       - image: cimg/python:3.10
     parameters:
@@ -138,15 +138,15 @@ jobs:
 workflows:
   my-workflow:
     jobs:
-      - deploy-cfn:
+      - deploy-app:
           stack-name-1: udafury-fury
           stack-name-2: udafury-fury-nodegroup
       - lint-frontend
-      - build-frontend:
+      - build-app:
           requires:
-            - lint-frontend
-      - deploy-frontend:
+            - lint-app
+      - deploy-app:
           cluster-name: "udafury-fury"
           requires:
-            - build-frontend
+            - build-app
             - deploy-cfn

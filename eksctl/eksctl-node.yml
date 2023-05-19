@@ -31,7 +31,7 @@ Resources:
           HttpPutResponseHopLimit: 2
           HttpTokens: optional
         SecurityGroupIds:
-        - Fn::ImportValue: eksctl-eksctl-demo-cluster::ClusterSecurityGroupId
+        - Fn::ImportValue: udafury-fury::ClusterSecurityGroupId
         TagSpecifications:
         - ResourceType: instance
           Tags:
