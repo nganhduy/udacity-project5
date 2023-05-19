@@ -11,7 +11,6 @@ spec:
     spec:
       containers:
         - name: deploment-container-angular
-          image: fury/angular-app:v1.0.0
-          imagePullPolicy: Always
+          image: fury/angular-app:latest
           ports:
-          - containerPort: 80
+            - containerPort: 80

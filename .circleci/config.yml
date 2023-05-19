@@ -20,11 +20,23 @@ jobs:
           name: Deploy eksctl-node
           command: |
               aws cloudformation deploy \
-              --template-file eksctl/eksctl.yml \
+              --template-file eksctl/eksctl-node.yml \
               --stack-name eksctl-fury-node \
-  build-app:
-    docker:
+  lint: 
+    docker: 
       - image: cimg/node:14.21.3
+    steps:
+      - checkout
+      - run:
+          name: Test App
+          command: 
+              cd angular-app
+              npm install 
+              npm run Test
+
+  build-frontend:
+    docker:
+      - image: docker:17.05.0-ce-git
     steps:
       - checkout
       - restore_cache:
@@ -32,12 +44,41 @@ jobs:
       - run:
           name: Build front-end
           command: |
-              cd my-app
-              npm install
-              npm run build
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build   
+              cd angular-app
+              docker build -t fury/angular-app .
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$USERNAME" -p "$PASSWORD"
+            docker push fury/angular-app:latest
+
+  deploy-frontend:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: eksctl-fury
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: "eksctl/spa-deployment.yml"
+          resource-name: deployment/angular-app
+          namespace: default
+      - kubernetes/update-container-image:
+          get-rollout-status: true
+          container-image-updates: "angular-app=fury/angular-app:latest"
+          resource-name: deployment/angular-app
+          namespace: default
+      - run:
+          name: Restart image
+          command: |
+            kubectl get service > service.txt    
+      - run:
+          name: Restart image
+          command: |
+            kubectl rollout restart deployment/angular-app
+
 
 workflows:
   default:
