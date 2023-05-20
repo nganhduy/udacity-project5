@@ -94,7 +94,7 @@ jobs:
       - run:
           name: Check deployment
           command: |
-            kubectl get Deployment
+            kubectl get deployment
       - run:
           name: Restart image
           command: |
