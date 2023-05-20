@@ -21,10 +21,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fury-app
+  name: angular-app-service
 spec:
   selector:
-    app: fury-app
+    app: angular-app
   ports:
     - name: http
       port: 80
