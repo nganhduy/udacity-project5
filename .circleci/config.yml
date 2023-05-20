@@ -123,7 +123,7 @@ workflows:
           requires:
             - lint-app
       - deploy-app:
-          cluster-name: eksctl-demo
+          cluster-name: fury-app
           requires:
             - build-app
             - deploy-eksctl

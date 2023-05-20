@@ -32,42 +32,17 @@ Resources:
           HttpTokens: optional
         SecurityGroupIds:
         - Fn::ImportValue: udafury-fury::ClusterSecurityGroupId
-        TagSpecifications:
-        - ResourceType: instance
-          Tags:
-          - Key: Name
-            Value: eksctl-demo-ng-8cd5ef40-Node
-          - Key: alpha.eksctl.io/nodegroup-name
-            Value: ng-8cd5ef40
-          - Key: alpha.eksctl.io/nodegroup-type
-            Value: managed
-        - ResourceType: volume
-          Tags:
-          - Key: Name
-            Value: eksctl-demo-ng-8cd5ef40-Node
-          - Key: alpha.eksctl.io/nodegroup-name
-            Value: ng-8cd5ef40
-          - Key: alpha.eksctl.io/nodegroup-type
-            Value: managed
-        - ResourceType: network-interface
-          Tags:
-          - Key: Name
-            Value: eksctl-demo-ng-8cd5ef40-Node
-          - Key: alpha.eksctl.io/nodegroup-name
-            Value: ng-8cd5ef40
-          - Key: alpha.eksctl.io/nodegroup-type
-            Value: managed
       LaunchTemplateName:
         Fn::Sub: "${AWS::StackName}"
   ManagedNodeGroup:
     Type: AWS::EKS::Nodegroup
     Properties:
       AmiType: AL2_x86_64
-      ClusterName: eksctl-demo
+      ClusterName: fury-app
       InstanceTypes:
       - m5.large
       Labels:
-        alpha.eksctl.io/cluster-name: eksctl-demo
+        alpha.eksctl.io/cluster-name: fury-app
         alpha.eksctl.io/nodegroup-name: ng-8cd5ef40
       LaunchTemplate:
         Id:

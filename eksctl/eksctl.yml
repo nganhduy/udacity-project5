@@ -32,7 +32,7 @@ Resources:
     Properties:
       KubernetesNetworkConfig:
         IpFamily: ipv4
-      Name: eksctl-demo
+      Name: fury-app
       ResourcesVpcConfig:
         EndpointPrivateAccess: false
         EndpointPublicAccess: true
