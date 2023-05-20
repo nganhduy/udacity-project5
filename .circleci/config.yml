@@ -85,12 +85,12 @@ jobs:
           get-rollout-status: true
           resource-file-path: eksctl/spa-deployment.yml
           resource-name: deployment/angular-app
-          namespace: default
+          show-kubectl-command: true
       - kubernetes/update-container-image:
           get-rollout-status: true
           container-image-updates: "angular-app=duyanhng/angular-app:latest"
           resource-name: deployment/angular-app
-          namespace: default
+          show-kubectl-command: true
       - run:
           name: Check deployment
           command: |
