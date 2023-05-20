@@ -83,7 +83,7 @@ jobs:
           install-kubectl: true
       - run:
           name: Install envsubst
-          command: >
+          command: |
             curl -L
             https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname
             -s`-`uname -m` -o envsubst
@@ -93,11 +93,11 @@ jobs:
             sudo mv envsubst /usr/local/bin
       - run:
           name: Replace variable
-          command: >
-            envsubst < eksctl/spa-deployment.yml > eksctl/spa-deployment.yml.temp && cp -f eksctl/spa-deployment.yml.temp eksctl/spa-deployment.yml
-            envsubst < eksctl/spa-service.yml > eksctl/spa-service.yml.temp && cp -f eksctl/spa-service.yml.temp eksctl/spa-service.yml
-            cat eksctl/spa-deployment.yml
-            cat eksctl/spa-service.yml
+          command: |
+              envsubst < eksctl/spa-deployment.yml > eksctl/spa-deployment.yml.temp && cp -f eksctl/spa-deployment.yml.temp eksctl/spa-deployment.yml
+              envsubst < eksctl/spa-service.yml > eksctl/spa-service.yml.temp && cp -f eksctl/spa-service.yml.temp eksctl/spa-service.yml
+              cat eksctl/spa-deployment.yml
+              cat eksctl/spa-service.yml
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: eksctl/spa-deployment.yml
