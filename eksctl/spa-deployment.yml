@@ -17,3 +17,16 @@ spec:
           image: duyanhng/angular-app:latest
           ports:
             - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fury-app
+spec:
+  selector:
+    app: fury-app
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
