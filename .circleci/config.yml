@@ -24,6 +24,7 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file eksctl/eksctl.yml \
+            --parameter-overrides $(jq -r '.[] | [.ParameterKey, .ParameterValue] | "\(.[0])=\(.[1])"' ./eksctl/eksctl-parameters.json) \
             --stack-name << parameters.stack-name-1 >> \
             --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
       - run:
@@ -95,10 +96,6 @@ jobs:
           name: Check deployment
           command: |
             kubectl get deployment
-      - run:
-          name: Restart image
-          command: |
-            kubectl rollout restart deployment/angular-app
 workflows:
   my-workflow:
     jobs:
