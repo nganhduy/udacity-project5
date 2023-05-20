@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: angular-app
-          image: fury/angular-app:latest
+          image: duyanhng/angular-app:latest
           ports:
             - containerPort: 80
