@@ -94,19 +94,11 @@ jobs:
       - run:
           name: Replace variable
           command: >
-            envsubst < eksctl/spa-deployment.yml >
-            eksctl/spa-deployment.yml.temp && cp -f
-            eksctl/spa-deployment.yml.temp eksctl/spa-deployment.yml
-
-            envsubst < eksctl/spa-service.yml > eksctl/spa-service.yml.temp &&
-            cp -f eksctl/spa-service.yml.temp eksctl/spa-service.yml
-
+            envsubst < eksctl/spa-deployment.yml > eksctl/spa-deployment.yml.temp && cp -feksctl/spa-deployment.yml.temp eksctl/spa-deployment.yml
+            envsubst < eksctl/spa-service.yml > eksctl/spa-service.yml.temp && cp -f eksctl/spa-service.yml.temp eksctl/spa-service.yml
             echo "##################################"
-
             cat eksctl/spa-deployment.yml
-
             echo "##################################"
-
             cat eksctl/spa-service.yml
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
@@ -137,7 +129,7 @@ workflows:
           requires:
             - lint-app
       - deploy-app:
-          cluster-name: udafury-fury
+          cluster-name: eksctl-demo
           requires:
             - build-app
             - deploy-eksctl
