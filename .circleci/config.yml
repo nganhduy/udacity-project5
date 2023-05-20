@@ -81,19 +81,6 @@ jobs:
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: << parameters.cluster-name >>
           install-kubectl: true
-      - run:
-          name: Install envsubst
-          command: |
-            curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m` -o envsubst
-            chmod +x envsubst
-            sudo mv envsubst /usr/local/bin
-      - run:
-          name: Replace variable
-          command: |
-              envsubst < eksctl/spa-deployment.yml > eksctl/spa-deployment.yml.temp && cp -f eksctl/spa-deployment.yml.temp eksctl/spa-deployment.yml
-              envsubst < eksctl/spa-service.yml > eksctl/spa-service.yml.temp && cp -f eksctl/spa-service.yml.temp eksctl/spa-service.yml
-              cat eksctl/spa-deployment.yml
-              cat eksctl/spa-service.yml
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: eksctl/spa-deployment.yml
@@ -101,13 +88,13 @@ jobs:
           namespace: default
       - kubernetes/update-container-image:
           get-rollout-status: true
-          container-image-updates: 'angular-app=duyanhng/angular-app:latest'
+          container-image-updates: "angular-app=duyanhng/angular-app:latest"
           resource-name: deployment/angular-app
           namespace: default
       - run:
-          name: Restart image
+          name: Check deployment
           command: |
-            kubectl get service > service.txt    
+            kubectl get Deployment
       - run:
           name: Restart image
           command: |
